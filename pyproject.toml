@@ -10,8 +10,12 @@ description = "Benchmarks for SpikeInterface using ASV"
 authors = [
     {name = "Heberto Mayorquin", email = "h.mayorquin@gmail.com"},
 ]
+
 readme = "README.md"
 
 dependencies = [
-    "asv",
+    "asv==0.6.3"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -15,7 +15,6 @@
     ],
 
     "pythons": ["3.8", "3.9", "3.10", "3.11", "3.12"], 
-    "benchmarks": [
-        "benchmarks/*.py"
-    ]
+    "benchmark_dir": "src/spikeinterface_airspeed_velocity_benchmarks/benchmarks"
+
 }
