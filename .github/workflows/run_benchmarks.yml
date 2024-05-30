@@ -19,14 +19,10 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
           python-version: 12  # Adjust Python version as needed
 
       - name: Install package with pip
         run: pip install -e .
-
-      - name: Install benchmark dependencies
-        run: pip install asv
 
       - name: Run ASV benchmarks
         run: asv run HASHFILE:hashestobenchmark.txt
