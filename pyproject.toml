@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "spikeinterface-airspeed-velocity-benchmarks"
+version = "0.1.0"
+description = "Benchmarks for SpikeInterface using ASV"
+authors = [
+    {name = "Heberto Mayorquin", email = "h.mayorquin@gmail.com"},
+]
+readme = "README.md"
+
+dependencies = [
+    "asv",
+]

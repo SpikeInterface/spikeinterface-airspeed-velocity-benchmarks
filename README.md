@@ -1,18 +1,24 @@
 
+# Spikeinterface Airspeed Velocity (ASV) Benchmarking
+
+This repository contains the benchmarking code for the SpikeInterface project. We use the Airspeed Velocity (ASV) framework to run the benchmarks. The benchmarks are run on the SpikeInterface codebase and the results can be visualized on the following website:
+
+https://spikeinterface.github.io/spikeinterface-airspeed-velocity-benchmarks/
+
+
+
 
 ### Some useful commands
 
-Our plan is to benchmark on all the recent tags
-
+Our plan is to benchmark on all the recent tags. They are stored in the files hashes_to_benchmark.txt and can be fetched using the following command:
 
 ```bash
-asv run 0.100.0^!
-asv run 0.100.1^!
-asv run 0.100.2^!
-asv run 0.100.3^!
-asv run 0.100.4^!
-asv run 0.100.5^!
-asv run 0.100.6^!
+git log --tags --simplify-by-decoration --pretty="format:%H" -n 10
+```
+Now the benchmark can be run by using the following command:
+
+```bash
+asv run HASHFILE:hashestobenchmark.txt
 ```
 
 How to benchmark a specific commit
@@ -31,11 +37,21 @@ How to benchmark using the python environment
 
 ```bash
 asv run --setps 1 --python=same
+```
 
+Git tricks to fetch the latest tags and their hashes
 
-### To-do
-* We have a benchmark for the function `write_to_binary`. 
-* Let's run this single benchmark for python versions 3.8, 3.9. 3.10, 3.11 and 3.12.
-* Let's run also this single benchmark for the latest five release tags
-* Check that visualization works.
-* Push that to github page`s.
+```bash
+git describe --tags `git rev-list --tags --max-count=30`
+``` 
+
+Prettier
+```bash
+git log --tags --simplify-by-decoration --pretty="format:%H" -n 10
+```
+
+Push results to github pages
+
+```bash
+asv gh-pages
+```
