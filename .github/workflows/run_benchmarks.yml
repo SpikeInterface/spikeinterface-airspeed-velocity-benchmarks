@@ -20,7 +20,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: "3.12" 
-          miniconda-version: "latest"
+          miniconda-version: "24.1.2"
 
       - name: Install package with pip
         run: pip install -e .
