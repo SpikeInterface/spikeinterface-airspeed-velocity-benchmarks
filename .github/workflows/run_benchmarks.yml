@@ -24,9 +24,12 @@ jobs:
 
       - name: Install package with pip
         run: pip install -e .
+    
 
       - name: Run ASV benchmarks
-        run: asv run HASHFILE:hashestobenchmark.txt
+        run: |
+          asv machine --yes
+          asv run HASHFILE:hashestobenchmark.txt
 
       - name: Push ASV results to gh-pages
         run: asv gh-pages
