@@ -20,10 +20,16 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: "3.11" 
-          miniconda-version: "py311_24.4.0"
+          miniconda-version: "latest"
+      - name: Show conda version
+        run: conda --version
+        shell: bash
+      - name: Downgrade conda
+        run: conda install conda=24.1
+        shell: bash
 
       - name: Install package with pip
-        run: pip install -e .
+        run: pip install .
     
 
       - name: Run ASV benchmarks
