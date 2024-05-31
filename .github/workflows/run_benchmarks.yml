@@ -27,11 +27,12 @@ jobs:
       - name: Downgrade conda
         run: conda install conda=24.1
         shell: bash
-
       - name: Install package with pip
-        run: pip install .
-    
-
+        run: |
+          ls -la
+          cat pyproject.toml
+          pip install .
+        shell: bash
       - name: Run ASV benchmarks
         run: |
           asv machine --yes
