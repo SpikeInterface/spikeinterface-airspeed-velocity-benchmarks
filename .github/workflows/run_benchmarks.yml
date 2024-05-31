@@ -33,8 +33,7 @@ jobs:
         shell: bash
       - name: Install ASV
         run: |
-          asv machine --yes
-          asv run --show-stderr --show-stdout --quick HEAD^!
+          pip install asv
         shell: bash
       - name: Run ASV benchmarks
         run: |
