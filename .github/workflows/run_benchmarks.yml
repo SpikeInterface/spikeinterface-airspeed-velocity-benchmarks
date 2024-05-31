@@ -29,12 +29,12 @@ jobs:
         shell: bash
       - name: Install package with pip
         run: |
-          ls -la
-          cat pyproject.toml
           pip install .
-          tree -L 2
-          cat setup.py
-          pip install asv
+        shell: bash
+      - name: Install ASV
+        run: |
+          asv machine --yes
+          asv run --show-stderr --show-stdout --quick HEAD^!
         shell: bash
       - name: Run ASV benchmarks
         run: |
