@@ -14,7 +14,7 @@
         "in-dir={env_dir} python -m pip install {wheel_file}"
     ],
 
-    "pythons": ["3.8", "3.9", "3.10", "3.11", "3.12"], 
+    "pythons": ["3.12"], 
     "benchmark_dir": "src/spikeinterface_airspeed_velocity_benchmarks/benchmarks"
 
 }
