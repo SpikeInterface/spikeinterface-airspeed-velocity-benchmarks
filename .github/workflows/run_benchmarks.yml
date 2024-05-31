@@ -21,9 +21,6 @@ jobs:
         with:
           python-version: "3.11" 
           miniconda-version: "latest"
-      - name: Show conda version
-        run: conda --version
-        shell: bash
       - name: Downgrade conda
         run: conda install conda=24.1
         shell: bash
@@ -41,4 +38,7 @@ jobs:
           asv run HASHFILE:hashestobenchmark.txt
 
       - name: Push ASV results to gh-pages
-        run: asv gh-pages
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          asv gh-pages
