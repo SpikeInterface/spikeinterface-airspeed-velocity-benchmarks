@@ -32,6 +32,7 @@ jobs:
           ls -la
           cat pyproject.toml
           pip install .
+          tree -L 2
         shell: bash
       - name: Run ASV benchmarks
         run: |

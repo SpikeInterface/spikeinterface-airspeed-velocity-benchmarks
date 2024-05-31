@@ -2,7 +2,6 @@
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
-
 [project]
 name = "spikeinterface-airspeed-velocity-benchmarks"
 version = "0.1.0"
