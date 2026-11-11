@@ -1,10 +1,10 @@
 {
     "version": 1,
     "project": "spikeinterface",
-    "project_url": "https://spikeinterface.readthedocs.io/en/latest/", 
+    "project_url": "https://spikeinterface.readthedocs.io/en/latest/",
     "repo": "https://github.com/SpikeInterface/spikeinterface.git",
     "dvcs": "git",
-    "environment_type": "conda",
+    "environment_type": "virtualenv",
     "branches": ["main"],
     "build_command": [
         "python -m pip install build",
@@ -13,8 +13,18 @@
     "install_command": [
         "in-dir={env_dir} python -m pip install {wheel_file}"
     ],
-
-    "pythons": ["3.12"], 
+    "// pythons": "3.11 is the only version valid from 0.101.2 to main",
+    "pythons": ["3.11"],
+    "// matrix": "pins shared by 0.101.2 and main: numcodecs 0.15.1 (zarr 2.17 breaks with >=0.16), pandas 2.3.3 (pandas 3 needs numpy>=2, 0.101.2 needs numpy<2)",
+    "matrix": {
+        "req": {
+            "numcodecs": "0.15.1",
+            "wavpack-numcodecs": "",
+            "numba": "",
+            "scipy": "",
+            "scikit-learn": "",
+            "pandas": "2.3.3"
+        }
+    },
     "benchmark_dir": "src/spikeinterface_airspeed_velocity_benchmarks/benchmarks"
-
 }
