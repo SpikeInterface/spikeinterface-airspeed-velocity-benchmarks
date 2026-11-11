@@ -4,44 +4,71 @@ on:
   workflow_dispatch:  # Manual trigger
   schedule:
     - cron: '0 0 1 * *'  # Runs at midnight on the 1st of every month
+  pull_request:  # Trigger on pull requests as well
+
+permissions:
+  contents: write  # asv gh-pages pushes
 
 jobs:
   benchmark:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest] # ,  windows-latest, macos-latest]
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      SI_BENCH_DATA: ${{ github.workspace }}/data/np_snippet
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.11" 
-          miniconda-version: "latest"
-      - name: Downgrade conda
-        run: conda install conda=24.1
-        shell: bash
-      - name: Install package with pip
-        run: |
-          pip install .
-        shell: bash
-      - name: Install ASV
-        run: |
-          pip install asv
-        shell: bash
+          fetch-depth: 0  # asv gh-pages needs the gh-pages branch
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"  # must match "pythons" in asv.conf.json
+
+      - name: Install ASV and SpikeInterface (for fetching data only)
+        # spikeinterface pinned: the version fetch_data.py was tested with against the AIND zarr (v2 + WavPack)
+        run: pip install asv virtualenv "spikeinterface==0.105.4" s3fs wavpack-numcodecs
+
+      # The snippet is fetched once and then cached; the key changes only when fetch_data.py does.
+      - name: Cache benchmark data
+        id: data-cache
+        uses: actions/cache@v4
+        with:
+          path: data/np_snippet
+          key: bench-data-${{ hashFiles('scripts/fetch_data.py') }}
+
+      - name: Fetch benchmark data
+        if: steps.data-cache.outputs.cache-hit != 'true'
+        run: python scripts/fetch_data.py --out data/np_snippet
+
+      # Reuse built environments for the tagged versions across runs.
+      - name: Cache ASV environments
+        uses: actions/cache@v4
+        with:
+          path: env
+          key: asv-env-${{ hashFiles('asv.conf.json', 'hashestobenchmark.txt') }}
+
+      # results/ is not stored anywhere else: cache it so tags are not rerun and history accumulates.
+      # Caches are immutable, so save under a new key each run and restore the latest one.
+      - name: Cache ASV results
+        uses: actions/cache@v4
+        with:
+          path: results
+          key: asv-results-${{ github.run_id }}
+          restore-keys: asv-results-
+
       - name: Run ASV benchmarks
         run: |
-          asv machine --yes
-          asv run HASHFILE:hashestobenchmark.txt
+          # fixed machine name: runner hostnames are random and would split the graphs
+          asv machine --yes --machine gh-ubuntu-latest
+          asv run --machine gh-ubuntu-latest --skip-existing-successful HASHFILE:hashestobenchmark.txt
+          asv run --machine gh-ubuntu-latest --skip-existing-successful main^!
 
       - name: Push ASV results to gh-pages
+        if: github.event_name != 'pull_request'  # PRs only test; don't publish unmerged results
         run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-          git fetch
-          git pull
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           asv publish
           asv gh-pages

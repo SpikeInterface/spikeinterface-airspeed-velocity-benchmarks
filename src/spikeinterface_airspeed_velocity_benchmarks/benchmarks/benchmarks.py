@@ -1,29 +1,6 @@
-import tempfile
+"""Import times (cheap; catches import-time regressions)."""
 
 
-class IoSuite:
-    """
-    An example benchmark that times the performance of various kinds
-    of iterating over dictionaries in Python.
-    """
-    def setup(self):
-        from spikeinterface.core import generate_recording
-        
-        self.recording = generate_recording(num_channels=384, durations=[1.0])
-        
-        self.temporary_folder = tempfile.TemporaryDirectory()
-        
-    def time_write_binary(self):
-        from spikeinterface.core import write_binary_recording
-        
-        save_path = self.temporary_folder.name + '/test.raw'
-        file_paths = [save_path]
-        job_kwargs = {"n_jobs": 1}
-        write_binary_recording(recording=self.recording, file_paths=file_paths, **job_kwargs)
-        
-    def teardown(self):
-        self.temporary_folder.cleanup()
-        
 class ImportSuite:
     
 

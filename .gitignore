@@ -164,3 +164,7 @@ cython_debug/
 spikeinterface/
 html/
 results/
+
+# asv environments and benchmark data
+env/
+data/
