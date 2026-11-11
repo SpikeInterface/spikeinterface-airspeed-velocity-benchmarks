@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   benchmark:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 360
     env:
       SI_BENCH_DATA: ${{ github.workspace }}/data/np_snippet
