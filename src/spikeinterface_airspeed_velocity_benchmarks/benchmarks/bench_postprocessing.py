@@ -28,8 +28,8 @@ EXTENSIONS = [
     "spiketrain_metrics",
 ]
 
-# union over versions (isolation_distance/l_ratio -> mahalanobis). The nn_* family is left out:
-# > 15 min each on CI (and single-process with an in-memory analyzer).
+# union over versions (isolation_distance/l_ratio -> mahalanobis). The nn_* family and
+# nearest_neighbor are left out: minutes per sample on CI (and single-process with an in-memory analyzer).
 QUALITY_METRICS = [
     "num_spikes",
     "firing_rate",
@@ -50,7 +50,6 @@ QUALITY_METRICS = [
     "l_ratio",
     "mahalanobis",
     "d_prime",
-    "nearest_neighbor",
     "silhouette",
 ]
 

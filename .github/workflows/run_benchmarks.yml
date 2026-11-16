@@ -62,8 +62,8 @@ jobs:
         run: |
           # fixed machine name: runner hostnames are random and would split the graphs
           asv machine --yes --machine gh-ubuntu-latest
-          asv run --machine gh-ubuntu-latest --skip-existing-successful HASHFILE:hashestobenchmark.txt
-          asv run --machine gh-ubuntu-latest --skip-existing-successful main^!
+          asv run -a rounds=1 --machine gh-ubuntu-latest --skip-existing-successful HASHFILE:hashestobenchmark.txt
+          asv run -a rounds=1 --machine gh-ubuntu-latest --skip-existing-successful main^!
 
       - name: Push ASV results to gh-pages
         if: github.event_name != 'pull_request'  # PRs only test; don't publish unmerged results
