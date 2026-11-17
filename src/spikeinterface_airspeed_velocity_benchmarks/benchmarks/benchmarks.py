@@ -1,29 +1,18 @@
-import tempfile
+"""Import times (cheap; catches import-time regressions)."""
+
+import importlib.util
 
 
-class IoSuite:
-    """
-    An example benchmark that times the performance of various kinds
-    of iterating over dictionaries in Python.
-    """
-    def setup(self):
-        from spikeinterface.core import generate_recording
-        
-        self.recording = generate_recording(num_channels=384, durations=[1.0])
-        
-        self.temporary_folder = tempfile.TemporaryDirectory()
-        
-    def time_write_binary(self):
-        from spikeinterface.core import write_binary_recording
-        
-        save_path = self.temporary_folder.name + '/test.raw'
-        file_paths = [save_path]
-        job_kwargs = {"n_jobs": 1}
-        write_binary_recording(recording=self.recording, file_paths=file_paths, **job_kwargs)
-        
-    def teardown(self):
-        self.temporary_folder.cleanup()
-        
+def _requires(module):
+    """Per-benchmark asv setup: skip when `module` does not exist in this version."""
+
+    def setup(*params):
+        if importlib.util.find_spec(module) is None:
+            raise NotImplementedError(f"{module} not in this version")
+
+    return setup
+
+
 class ImportSuite:
     
 
@@ -48,8 +37,14 @@ class ImportSuite:
         return "import spikeinterface.postprocessing"
 
     def timeraw_import_qualitymetrics(self):
-            
         return "import spikeinterface.qualitymetrics"
+
+    timeraw_import_qualitymetrics.setup = _requires("spikeinterface.qualitymetrics")  # removed in 0.105
+
+    def timeraw_import_metrics(self):
+        return "import spikeinterface.metrics"
+
+    timeraw_import_metrics.setup = _requires("spikeinterface.metrics")  # added in 0.104
 
     def timeraw_import_comparison(self):            
         return "import spikeinterface.comparison"
