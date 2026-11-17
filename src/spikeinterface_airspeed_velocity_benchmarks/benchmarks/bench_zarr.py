@@ -87,7 +87,7 @@ class _Read:
 
     timeout = 1800
 
-    def setup_cache(self):
+    def _write_variants(self):
         set_jobs()
         rec = real_recording(DURATION)
         folders = {}
@@ -144,8 +144,11 @@ class ZarrCompressionSuite(_Compression, _Write):
     pass
 
 
+# Each read suite needs its own setup_cache: asv keys the cache by source location, so an inherited
+# one is run once and shared between suites (the other suite then finds none of its variants).
 class ZarrCompressionReadSuite(_Compression, _Read):
-    pass
+    def setup_cache(self):
+        return self._write_variants()
 
 
 class ZarrChunkingSuite(_Chunking, _Write):
@@ -153,4 +156,5 @@ class ZarrChunkingSuite(_Chunking, _Write):
 
 
 class ZarrChunkingReadSuite(_Chunking, _Read):
-    pass
+    def setup_cache(self):
+        return self._write_variants()
