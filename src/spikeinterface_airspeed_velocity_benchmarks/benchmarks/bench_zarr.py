@@ -31,8 +31,12 @@ def _compressor(name):
             raise NotImplementedError("wavpack-numcodecs missing or too old for this zarr")
         return WavPack()
     cname, clevel = name.split("-")
-    # shuffle=2 (bitshuffle) as int: the only form accepted by both numcodecs 0.15 and 0.16
-    return codec("Blosc", cname=cname, clevel=int(clevel), shuffle=2)
+    if is_zarr_v3():
+        from zarr.codecs import BloscCodec
+
+        # not numcodecs.zarr3.Blosc: it gets raw bytes and no typesize, so bitshuffle works on bytes (~2.1x vs 3x)
+        return BloscCodec(cname=cname, clevel=int(clevel), shuffle="bitshuffle")
+    return codec("Blosc", cname=cname, clevel=int(clevel), shuffle=2)  # 2 = bitshuffle
 
 
 def _compression_kwargs(compressor, filters):

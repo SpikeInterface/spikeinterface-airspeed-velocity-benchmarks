@@ -11,14 +11,14 @@
         "python -m build --wheel --outdir {build_cache_dir}"
     ],
     "install_command": [
-        "in-dir={env_dir} python -m pip install {wheel_file}"
+        "in-dir={env_dir} python -m pip install {wheel_file}",
+        "in-dir={env_dir} python {conf_dir}/scripts/fix_numcodecs.py"
     ],
     "// pythons": "3.11 is the only version valid from 0.101.2 to main",
     "pythons": ["3.11"],
-    "// matrix": "pins shared by 0.101.2 and main: numcodecs 0.15.1 (zarr 2.17 breaks with >=0.16), pandas 2.3.3 (pandas 3 needs numpy>=2, 0.101.2 needs numpy<2)",
+    "// matrix": "pandas 2.3.3 works with both numpy 1 (0.101.2) and 2 (main); numcodecs is chosen per commit by scripts/fix_numcodecs.py",
     "matrix": {
         "req": {
-            "numcodecs": "0.15.1",
             "wavpack-numcodecs": "",
             "numba": "",
             "scipy": "",
