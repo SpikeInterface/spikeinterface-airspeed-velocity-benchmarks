@@ -30,7 +30,11 @@ $(document).ready(function() {
             }
             groups[group].push(bm_name);
         });
-        return groups;
+        var order = ['bench_imports', 'bench_zarr', 'bench_preprocessing', 'bench_postprocessing', 'bench_sortingcomponents'];
+        var ordered = {};
+        $.each(order, function(i, g) { if (groups[g] !== undefined) ordered[g] = groups[g]; });
+        $.each(groups, function(g, bms) { if (ordered[g] === undefined) ordered[g] = bms; });
+        return ordered;
     }
 
     function benchmark_container(bm) {

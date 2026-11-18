@@ -302,7 +302,14 @@ $(document).ready(function() {
                         var unit = $.asv.main_json.benchmarks[current_benchmark].unit;
                         showTooltip(
                             item.pageX, item.pageY,
-                            $.asv.pretty_unit(y, unit) + " @ " + commit_hash);
+                            $.asv.pretty_unit(y, unit) + " @ " + (function () {
+                                // same x -> revision mapping as get_commit_hash()
+                                var rev = date_scale ? date_to_revision[item.datapoint[0]] : item.datapoint[0];
+                                var tag = null;
+                                $.each($.asv.main_json.tags, function(t, r) { if (r == rev) tag = t; });
+                                // untagged = main: asv.conf.json only tracks the main branch
+                                return (tag || "main") + " (" + commit_hash + ")";
+                            })());
                     }
                 }
             } else {
@@ -1054,7 +1061,20 @@ $(document).ready(function() {
                 graphs = orig_graphs;
                 options.xaxis.mode = null;
                 options.xaxis.axisLabel = 'commits';
-                options.xaxis.tickFormatter = function (v, axis) { return ""; };
+                options.xaxis.axisLabel = 'version';
+                options.xaxis.tickFormatter = null;
+                var rev_to_tag = {};
+                $.each($.asv.main_json.tags, function(tag, rev) { rev_to_tag[rev] = tag; });
+                var revs = [];
+                $.each(graphs, function(i, graph) {
+                    $.each(graph.data, function(j, point) {
+                        if (revs.indexOf(point[0]) === -1) revs.push(point[0]);
+                    });
+                });
+                options.xaxis.ticks = $.map(revs, function(rev) {
+                    var hash = $.asv.main_json.revision_to_hash[rev] || '';
+                    return [[rev, rev_to_tag[rev] || "main (" + hash.slice(0, 8) + ")"]];
+                });
             }
             if (even_spacing) {
                 even_spacing_revisions = [];
