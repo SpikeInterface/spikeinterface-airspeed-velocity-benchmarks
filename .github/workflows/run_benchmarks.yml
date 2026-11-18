@@ -2,6 +2,11 @@ name: Run Benchmarks
 
 on:
   workflow_dispatch:  # Manual trigger
+    inputs:
+      smoke:
+        description: "Smoke test (~20 min): 2 versions, 2 suites, publish dry-run (no site update, no results saved)"
+        type: boolean
+        default: false
   schedule:
     - cron: '0 0 1 * *'  # Runs at midnight on the 1st of every month
   pull_request:  # Trigger on pull requests as well
@@ -15,6 +20,7 @@ jobs:
     timeout-minutes: 360
     env:
       SI_BENCH_DATA: ${{ github.workspace }}/data/np_snippet
+      SMOKE: ${{ inputs.smoke }}  # empty (false) for schedule / pull_request
 
     steps:
       - name: Checkout code
@@ -52,6 +58,7 @@ jobs:
       # results/ is not stored anywhere else: cache it so tags are not rerun and history accumulates.
       # Caches are immutable, so save under a new key each run and restore the latest one.
       - name: Cache ASV results
+        if: ${{ !inputs.smoke }}  # smoke results must not be reused by --skip-existing-successful
         uses: actions/cache@v4
         with:
           path: results
@@ -62,6 +69,13 @@ jobs:
         run: |
           # fixed machine name: runner hostnames are random and would split the graphs
           asv machine --yes --machine gh-ubuntu-latest
+          if [ "$SMOKE" = "true" ]; then
+            # zarr 2 release + zarr 3 main (fix_numcodecs.py), imports + real-data zarr suite
+            for commit in 0.105.4 main; do
+              asv run -a rounds=1 --machine gh-ubuntu-latest --bench ImportSuite --bench ZarrCompressionReadSuite "$commit^!"
+            done
+            exit 0
+          fi
           asv run -a rounds=1 --machine gh-ubuntu-latest --skip-existing-successful HASHFILE:hashestobenchmark.txt
           asv run -a rounds=1 --machine gh-ubuntu-latest --skip-existing-successful main^!
 
@@ -70,5 +84,13 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # asv builds on a *local* gh-pages branch; checkout only creates origin/gh-pages, and without it
+          # asv makes an unrelated commit and the push is rejected as non-fast-forward
+          git fetch origin gh-pages:gh-pages
           asv publish
-          asv gh-pages
+          if [ "$SMOKE" = "true" ]; then
+            asv gh-pages --no-push
+            git push --dry-run origin gh-pages  # checks token + fast-forward without changing the site
+          else
+            asv gh-pages
+          fi
