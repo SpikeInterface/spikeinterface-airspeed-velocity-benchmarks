@@ -168,3 +168,4 @@ results/
 # asv environments and benchmark data
 env/
 data/
+asv-html/

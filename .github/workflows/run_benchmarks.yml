@@ -87,6 +87,7 @@ jobs:
           # asv builds on a *local* gh-pages branch; checkout only creates origin/gh-pages, and without it
           # asv makes an unrelated commit and the push is rejected as non-fast-forward
           git fetch origin gh-pages:gh-pages
+          python scripts/patch_asv_html.py  # version labels on x ticks / tooltips, grid group order
           asv publish
           if [ "$SMOKE" = "true" ]; then
             asv gh-pages --no-push

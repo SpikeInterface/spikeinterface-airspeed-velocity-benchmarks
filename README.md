@@ -8,7 +8,7 @@ https://spikeinterface.github.io/spikeinterface-airspeed-velocity-benchmarks/
 
 | Module | Suites |
 |---|---|
-| `benchmarks.py` | import time of every submodule |
+| `bench_imports.py` | import time of every submodule |
 | `bench_zarr.py` | save to zarr by compressor (Blosc zstd/lz4 levels, WavPack) x filter (Delta), chunking and sharding (zarr v3 only); read speed and compression ratio (`track_`) |
 | `bench_preprocessing.py` | preprocessing chains saved to binary, by `n_jobs` / `pool_engine`; peak memory |
 | `bench_postprocessing.py` | `SortingAnalyzer`: one benchmark per extension, one per quality metric, create/load per format |
