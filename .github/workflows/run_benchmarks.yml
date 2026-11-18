@@ -94,3 +94,12 @@ jobs:
           else
             asv gh-pages
           fi
+
+      # smoke only: the built site, to preview locally (gh run download <id> -n asv-html; python -m http.server -d asv-html)
+      - name: Upload site for preview
+        if: ${{ inputs.smoke }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: asv-html
+          path: html
+          retention-days: 7
